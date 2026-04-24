@@ -1,0 +1,21 @@
+services:
+  whapi-agent:
+    build: .
+    image: whapi-agent:latest
+    container_name: whapi-agent
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - CLAUDE_MODEL=${CLAUDE_MODEL:-claude-sonnet-4-5}
+      - WHAPI_TOKEN=${WHAPI_TOKEN}
+      - WHAPI_API_URL=${WHAPI_API_URL:-https://gate.whapi.cloud}
+      - PORT=3000
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - BUFFER_WINDOW_MS=${BUFFER_WINDOW_MS:-3000}
+      - HISTORY_MAX_MESSAGES=${HISTORY_MAX_MESSAGES:-30}
+      - SQLITE_PATH=/app/data/whapi-agent.sqlite
+      - RATE_LIMIT_PER_MINUTE=${RATE_LIMIT_PER_MINUTE:-30}
+    volumes:
+      - ./data:/app/data
