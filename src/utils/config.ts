@@ -2,7 +2,7 @@ import { z } from "zod";
 
 const configSchema = z.object({
   ANTHROPIC_API_KEY: z.string().min(1, "ANTHROPIC_API_KEY is required"),
-  CLAUDE_MODEL: z.string().default("claude-sonnet-4-5"),
+  CLAUDE_MODEL: z.string().default("claude-sonnet-4-6"),
   WHAPI_TOKEN: z.string().min(1, "WHAPI_TOKEN is required"),
   WHAPI_API_URL: z.string().url().default("https://gate.whapi.cloud"),
   PORT: z.coerce.number().int().positive().default(3000),

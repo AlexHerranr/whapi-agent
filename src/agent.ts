@@ -55,7 +55,7 @@ export class Agent {
       opts.provider ??
       new AnthropicProvider({
         apiKey: opts.anthropicApiKey,
-        model: opts.model ?? "claude-sonnet-4-5",
+        model: opts.model ?? "claude-sonnet-4-6",
       });
 
     this.store =

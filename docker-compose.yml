@@ -8,7 +8,7 @@ services:
       - "${PORT:-3000}:3000"
     environment:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
-      - CLAUDE_MODEL=${CLAUDE_MODEL:-claude-sonnet-4-5}
+      - CLAUDE_MODEL=${CLAUDE_MODEL:-claude-sonnet-4-6}
       - WHAPI_TOKEN=${WHAPI_TOKEN}
       - WHAPI_API_URL=${WHAPI_API_URL:-https://gate.whapi.cloud}
       - PORT=3000
