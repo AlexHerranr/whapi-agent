@@ -3,7 +3,7 @@ import type { ToolDefinition } from "../types.js";
 
 const schema = z.object({
   query: z.string().min(1),
-  limit: z.number().int().positive().max(10).default(3),
+  limit: z.number().int().positive().max(10).optional(),
 });
 
 interface Doc {
@@ -34,7 +34,7 @@ export function createSearchDocsTool(
     description:
       "Full-text search over the application's knowledge base. Returns the top matching passages.",
     schema,
-    execute: ({ query, limit }) => {
+    execute: ({ query, limit = 3 }) => {
       const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
       const scored = corpus
         .map((doc) => {

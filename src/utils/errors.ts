@@ -1,11 +1,12 @@
 export class AgentError extends Error {
-  constructor(
-    message: string,
-    public readonly code: string,
-    public readonly cause?: unknown,
-  ) {
+  public readonly code: string;
+  public override readonly cause?: unknown;
+
+  constructor(message: string, code: string, cause?: unknown) {
     super(message);
     this.name = "AgentError";
+    this.code = code;
+    this.cause = cause;
   }
 }
 
