@@ -20,6 +20,29 @@ See [`docs/message-buffering.md`](docs/message-buffering.md) for the full ration
 
 ---
 
+## Why not X, Y, Z
+
+There are excellent projects in this space. `whapi-agent` does not try to replace them — it sits in a narrower slot. Pick it only if the slot matches your case.
+
+- **[whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js)** — non-official WhatsApp Web client. Use it when you need low-level protocol access and don't want WHAPI.cloud. It does not do LLMs, tool calling, or message buffering.
+- **[Baileys](https://github.com/WhiskeySockets/Baileys)** — multi-device WhatsApp client library. Same case as above: low-level, no AI, no buffering. Common base for building a full platform from scratch.
+- **[WAHA](https://github.com/devlikeapro/waha)** — HTTP API wrapper around an embedded browser. Solves *sending and receiving* messages. Everything above that layer is on you.
+- **[Evolution API](https://github.com/EvolutionAPI/evolution-api)** — similar to WAHA, popular in LATAM. Same observation: it stops at the messaging layer.
+- **[BuilderBot](https://github.com/codigoencasa/builderbot)** — code-first chatbot framework. Has WhatsApp support but is not LLM-native; tool calling, provider abstraction and buffering are your responsibility.
+- **[Typebot](https://github.com/baptisteArno/typebot.io)** / **[Botpress](https://github.com/botpress/botpress)** — visual no-code / low-code builders. Use them if you don't want to write code, or if you need a drag-and-drop flow editor. You give up control of the LLM loop in exchange.
+- **[Chatwoot](https://github.com/chatwoot/chatwoot)** — omnichannel customer support platform with a WhatsApp channel. Different category entirely: helpdesk, inbox, teams, reports. Not a place to host an autonomous LLM agent.
+
+Use `whapi-agent` when all four are true:
+
+1. You already picked WHAPI.cloud as the gateway (or you will).
+2. You want to write TypeScript, not drag boxes.
+3. You want the LLM loop — buffering, tool calling, conversation state — handled for you.
+4. You do **not** need a UI, visual builder, multi-tenant platform, or omnichannel inbox on top.
+
+If any of those is false, one of the projects above is a better fit.
+
+---
+
 ## Usage
 
 ```ts
