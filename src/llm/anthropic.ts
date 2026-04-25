@@ -1,4 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { z } from "zod";
+import { zodToJsonSchema } from "zod-to-json-schema";
 import { ProviderError } from "../utils/errors.js";
 import type { ToolDefinition, ToolResult } from "../tools/types.js";
 import type {
@@ -88,7 +90,7 @@ export class AnthropicProvider implements LLMProvider {
     return tools.map((t) => ({
       name: t.name,
       description: t.description,
-      input_schema: zodToJsonSchema(t),
+      input_schema: zodToInputSchema(t.schema),
     }));
   }
 
@@ -102,52 +104,20 @@ export class AnthropicProvider implements LLMProvider {
   }
 }
 
-function zodToJsonSchema(tool: ToolDefinition): Anthropic.Tool["input_schema"] {
-  const def = (tool.schema as unknown as { _def?: { typeName?: string } })._def;
-  if (def?.typeName === "ZodObject") {
-    const shape = (tool.schema as unknown as { shape: Record<string, unknown> })
-      .shape;
-    const properties: Record<string, { type: string; description?: string }> = {};
-    const required: string[] = [];
-    for (const [key, value] of Object.entries(shape)) {
-      properties[key] = schemaFieldToJson(value);
-      if (!isOptional(value)) required.push(key);
-    }
-    return { type: "object", properties, required };
+function zodToInputSchema(
+  schema: z.ZodType<unknown>,
+): Anthropic.Tool["input_schema"] {
+  const json = zodToJsonSchema(schema, {
+    target: "openApi3",
+    $refStrategy: "none",
+  }) as Record<string, unknown>;
+
+  if (json["type"] !== "object") {
+    return { type: "object", properties: {} };
   }
-  return { type: "object", properties: {} };
-}
-
-function schemaFieldToJson(value: unknown): { type: string; description?: string } {
-  const node = value as {
-    _def?: { typeName?: string; description?: string };
+  return {
+    type: "object",
+    properties: (json["properties"] as Record<string, unknown>) ?? {},
+    required: (json["required"] as string[] | undefined) ?? undefined,
   };
-  const typeName = node._def?.typeName;
-  const description = node._def?.description;
-  const base: { type: string; description?: string } = (() => {
-    switch (typeName) {
-      case "ZodString":
-        return { type: "string" };
-      case "ZodNumber":
-        return { type: "number" };
-      case "ZodBoolean":
-        return { type: "boolean" };
-      case "ZodArray":
-        return { type: "array" };
-      case "ZodOptional":
-      case "ZodDefault":
-        return schemaFieldToJson(
-          (node as unknown as { _def: { innerType: unknown } })._def.innerType,
-        );
-      default:
-        return { type: "string" };
-    }
-  })();
-  if (description) base.description = description;
-  return base;
-}
-
-function isOptional(value: unknown): boolean {
-  const typeName = (value as { _def?: { typeName?: string } })._def?.typeName;
-  return typeName === "ZodOptional" || typeName === "ZodDefault";
 }
